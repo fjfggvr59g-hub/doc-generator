@@ -1,0 +1,33 @@
+name: Сборка Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Проверка кода
+      uses: actions/checkout@v4
+
+    - name: Установка Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Установка зависимостей
+      run: |
+        pip install pandas openpyxl python-docx num2words pyinstaller
+
+    - name: Сборка EXE
+      run: |
+        pyinstaller --onefile --windowed генератор.py
+
+    - name: Загрузка EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-EXE
+        path: dist/генератор.exe
