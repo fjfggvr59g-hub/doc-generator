@@ -22,11 +22,21 @@ jobs:
       run: |
         pip install pandas openpyxl python-docx
 
-    - name: Сборка EXE
+    - name: Сборка EXE (Договоры)
+      run: |
+        pyinstaller --onefile --windowed генератор.py
+
+    - name: Сборка EXE (Согласия)
       run: |
         pyinstaller --onefile --windowed генератор_согласий.py
 
-    - name: Загрузка EXE
+    - name: Загрузка EXE (Договоры)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Генератор-договоров
+        path: dist/генератор.exe
+
+    - name: Загрузка EXE (Согласия)
       uses: actions/upload-artifact@v4
       with:
         name: Генератор-согласий
