@@ -5,7 +5,11 @@ import re
 from datetime import datetime
 
 # ===== НАСТРОЙКИ =====
+# Было:
 EXCEL_FILE = 'Данные для согласий.xlsx'
+
+# Стало:
+EXCEL_FILE = 'Данные.xlsx'
 TEMPLATE_FILE = 'Шаблон_Согласия.docx'
 OUTPUT_FOLDER = 'согласия'
 # =====================
