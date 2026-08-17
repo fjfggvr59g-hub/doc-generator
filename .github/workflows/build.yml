@@ -20,7 +20,7 @@ jobs:
 
     - name: Установка зависимостей
       run: |
-        pip install pandas openpyxl python-docx
+        pip install pandas openpyxl python-docx pyinstaller
 
     - name: Сборка EXE (Договоры)
       run: |
