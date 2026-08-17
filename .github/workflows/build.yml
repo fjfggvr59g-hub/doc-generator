@@ -20,14 +20,14 @@ jobs:
 
     - name: Установка зависимостей
       run: |
-        pip install pandas openpyxl python-docx num2words pyinstaller
+        pip install pandas openpyxl python-docx
 
     - name: Сборка EXE
       run: |
-        pyinstaller --onefile --windowed генератор.py
+        pyinstaller --onefile --windowed генератор_согласий.py
 
     - name: Загрузка EXE
       uses: actions/upload-artifact@v4
       with:
-        name: Windows-EXE
-        path: dist/генератор.exe
+        name: Генератор-согласий
+        path: dist/генератор_согласий.exe
