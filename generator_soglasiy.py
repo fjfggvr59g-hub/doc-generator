@@ -5,10 +5,6 @@ import re
 from datetime import datetime
 
 # ===== НАСТРОЙКИ =====
-# Было:
-EXCEL_FILE = 'Данные для согласий.xlsx'
-
-# Стало:
 EXCEL_FILE = 'Данные.xlsx'
 TEMPLATE_FILE = 'Шаблон_Согласия.docx'
 OUTPUT_FOLDER = 'согласия'
@@ -33,25 +29,17 @@ MONTHS = {
 }
 
 def format_date(value):
-    """
-    Преобразует дату в формат: 17 августа 2026 г.
-    Поддерживает: datetime, строки '17.08.2026', '2026-08-17'
-    """
     if pd.isna(value) or not str(value).strip():
         return ''
     
     date_str = str(value).strip()
     
-    # Пробуем разные форматы
     try:
-        # Если это уже datetime объект
         if isinstance(value, (pd.Timestamp, datetime)):
             dt = value
-        # Если строка в формате '17.08.2026'
         elif re.match(r'\d{2}\.\d{2}\.\d{4}', date_str):
             day, month, year = date_str.split('.')
             dt = datetime(int(year), int(month), int(day))
-        # Если строка в формате '2026-08-17'
         elif re.match(r'\d{4}-\d{2}-\d{2}', date_str):
             year, month, day = date_str.split('-')
             dt = datetime(int(year), int(month), int(day))
@@ -67,13 +55,9 @@ def format_date(value):
     return f'{day} {month} {year} г.'
 
 def format_date_with_quotes(value):
-    """
-    Формат для даты согласия: «17» августа 2026 г.
-    """
     formatted = format_date(value)
     if not formatted:
         return '«______» _______________ 20____ г.'
-    # Вставляем кавычки вокруг дня
     parts = formatted.split(' ', 1)
     if len(parts) == 2:
         return f'«{parts[0]}» {parts[1]}'
@@ -143,7 +127,6 @@ for index, row in data.iterrows():
     # Основные поля
     for col in data.columns:
         if col in placeholders:
-            # Специальная обработка для дат
             if col == 'Дата рождения':
                 replacements[col] = format_date(row.get(col, ''))
             elif col == 'Дата согласия':
@@ -151,11 +134,9 @@ for index, row in data.iterrows():
             else:
                 replacements[col] = clean_text(row.get(col, ''))
     
-    # Специальные поля
     if 'Фамилия И.О.' in placeholders:
         replacements['Фамилия И.О.'] = format_fio_initials(row.get('ФИО', ''))
     
-    # Заменяем во всех параграфах
     for paragraph in doc.paragraphs:
         replace_in_paragraph_safe(paragraph, replacements)
     
@@ -165,7 +146,6 @@ for index, row in data.iterrows():
                 for paragraph in cell.paragraphs:
                     replace_in_paragraph_safe(paragraph, replacements)
     
-    # Сохраняем
     fio = clean_text(row.get('ФИО', f'Согласие_{index+1}'))
     filename = f"Согласие_{fio}.docx"
     filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
@@ -173,4 +153,3 @@ for index, row in data.iterrows():
     print(f"✅ Создано: {filename}")
 
 print(f"\n🎉 Готово! Создано {len(data)} согласий")
-input("Нажми Enter для выхода...")
