@@ -20,15 +20,16 @@ jobs:
 
     - name: Установка зависимостей
       run: |
-        pip install pandas openpyxl python-docx
+        python -m pip install --upgrade pip
+        pip install pandas openpyxl python-docx pyinstaller
 
     - name: Сборка EXE (Договоры)
       run: |
-        pyinstaller --onefile --windowed генератор.py
+        python -m PyInstaller --onefile --windowed генератор.py
 
     - name: Сборка EXE (Согласия)
       run: |
-        pyinstaller --onefile --windowed генератор_согласий.py
+        python -m PyInstaller --onefile --windowed генератор_согласий.py
 
     - name: Загрузка EXE (Договоры)
       uses: actions/upload-artifact@v4
