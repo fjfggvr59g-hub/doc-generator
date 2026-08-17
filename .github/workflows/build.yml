@@ -1,3 +1,50 @@
+name: Сборка Windows и Linux EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Проверка кода
+      uses: actions/checkout@v4
+
+    - name: Установка Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Установка зависимостей
+      run: |
+        pip install pandas openpyxl python-docx pyinstaller
+
+    - name: Сборка Windows (Договоры)
+      run: |
+        if (Test-Path "генератор.py") {
+          pyinstaller --onefile --windowed генератор.py
+        }
+
+    - name: Сборка Windows (Согласия)
+      run: |
+        if (Test-Path "generator_soglasiy.py") {
+          pyinstaller --onefile --windowed generator_soglasiy.py
+        }
+
+    - name: Загрузка Windows (Договоры)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Генератор-договоров-windows
+        path: dist/генератор.exe
+
+    - name: Загрузка Windows (Согласия)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Генератор-согласий-windows
+        path: dist/generator_soglasiy.exe
+
   build-linux:
     runs-on: ubuntu-latest
     steps:
