@@ -3,6 +3,7 @@ from docx import Document
 import os
 import re
 from datetime import datetime
+import platform
 
 # ===== НАСТРОЙКИ =====
 EXCEL_FILE = 'Данные.xlsx'
@@ -119,6 +120,8 @@ for table in template_doc.tables:
 
 print(f"📝 Найдены метки: {placeholders}")
 
+created_count = 0
+
 for index, row in data.iterrows():
     doc = Document(TEMPLATE_FILE)
     
@@ -151,5 +154,40 @@ for index, row in data.iterrows():
     filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
     doc.save(os.path.join(OUTPUT_FOLDER, filename))
     print(f"✅ Создано: {filename}")
+    created_count += 1
 
-print(f"\n🎉 Готово! Создано {len(data)} согласий")
+print(f"\n🎉 Готово! Создано {created_count} согласий")
+
+# ===== ПОКАЗЫВАЕМ ОКНО (универсально) =====
+def show_message():
+    system = platform.system()
+    message = f"✅ Сформировано {created_count} согласий\n\n📁 Документы сохранены в папке 'согласия'"
+    
+    if system == 'Windows':
+        # Windows — используем нативное окно
+        try:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(0, message, "🎉 Готово!", 0x40 | 0x1)
+            return
+        except:
+            pass
+    
+    # Если не Windows или не сработало — пробуем tkinter (работает везде)
+    try:
+        import tkinter as tk
+        from tkinter import messagebox
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showinfo("🎉 Готово!", message)
+        root.destroy()
+        return
+    except:
+        pass
+    
+    # Если всё сломалось — просто печатаем в консоль
+    print("\n" + "="*50)
+    print(message)
+    print("="*50)
+
+# Показываем окно
+show_message()
